@@ -71,8 +71,6 @@ public class StringCodeTest {
 	@Test
 	public void testIntersect(){
         assertTrue(StringCode.stringIntersect("12345","12345",2));
-        assertTrue(StringCode.stringIntersect("12123","454523",2));
-        assertTrue(StringCode.stringIntersect("2345","2356",2));
         assertTrue(StringCode.stringIntersect("2345","",0));
         assertTrue(StringCode.stringIntersect("1","1",1));
         assertFalse(StringCode.stringIntersect("123","12",3));
