@@ -42,16 +42,27 @@ public class TabooTest {
     }
 
     @Test
-    public void reduceAdvancedTest() {
-        List<String> list = Arrays.asList("a", "c", "a", "a");
+     public void reduceAdvancedTest() {
+        List<String> list = Arrays.asList("a", "a");
         Taboo<String> taboo = new Taboo<String>(list);
 
-        List<String> reducedList = new ArrayList<String>(Arrays.asList("a", "c", "a", "a"));
+        List<String> reducedList = new ArrayList<String>(Arrays.asList("a", "a", "a", "a"));
         taboo.reduce(reducedList);
 
         List<String> resultList = new ArrayList<String>(Arrays.asList("a"));
         assertTrue(resultList.equals(reducedList));
 
+    }
+    @Test
+    public void reduceAdvancedTest2() {
+        List<String> list = Arrays.asList("a");
+        Taboo<String> taboo = new Taboo<String>(list);
+
+        List<String> reducedList = new ArrayList<String>(Arrays.asList("a", "a", "a", "a"));
+        taboo.reduce(reducedList);
+
+        List<String> resultList = new ArrayList<String>(Arrays.asList("a", "a", "a", "a"));
+        assertTrue(resultList.equals(reducedList));
     }
 
     @Test
@@ -62,8 +73,6 @@ public class TabooTest {
         List<String> a = Arrays.asList("");
         t1.reduce(a);
         assertTrue(a.equals(Arrays.asList("")));
-
-
     }
 
 }
