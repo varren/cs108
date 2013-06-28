@@ -8,7 +8,30 @@ public class Appearances {
 	 * @return number of same-appearance elements
 	 */
 	public static <T> int sameCount(Collection<T> a, Collection<T> b) {
-		return 0; // TODO ADD CODE HERE
+		HashMap<T, Integer > aHash = new HashMap<T, Integer>();
+        HashMap<T, Integer > bHash = new HashMap<T, Integer >();
+
+        calculateAppearence(a, aHash);
+        calculateAppearence(b, bHash);
+
+        int result = 0;
+
+        for (T value: aHash.keySet())
+            if(bHash.containsKey(value)
+                    && aHash.get(value).equals(bHash.get(value)))
+                result++;
+
+
+        return result;
 	}
-	
+
+    private static <T> void calculateAppearence(Collection<T> a, HashMap<T, Integer> aHash) {
+        for (T nextValue : a) {
+            if (aHash.containsKey(nextValue))
+                aHash.put(nextValue, 1 + aHash.get(nextValue));
+            else
+                aHash.put(nextValue, 1);
+        }
+    }
+
 }

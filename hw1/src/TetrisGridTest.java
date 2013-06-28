@@ -26,7 +26,23 @@ public class TetrisGridTest {
 
 		assertTrue( Arrays.deepEquals(after, tetris.getGrid()) );
 	}
-	
-	// TODO ADD TESTS
-	
+    @Test
+    public void testClearMultipleRows() {
+        boolean[][] before =
+                {
+                        {true, true, false,false, true },
+                        {false, true, true,false,false }
+                };
+
+        boolean[][] after =
+                {
+                        { true, false, false,  true, false },
+                        {false,  true, false, false, false }
+                };
+
+        TetrisGrid tetris = new TetrisGrid(before);
+        tetris.clearRows();
+
+        assertTrue( Arrays.deepEquals(after, tetris.getGrid()) );
+    }
 }

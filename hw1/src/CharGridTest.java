@@ -74,8 +74,10 @@ public class CharGridTest {
         assertEquals(3, cg.charArea('a'));
     }
 
+
+    //my tests
     @Test
-	public void testCountPlus1(){
+	public void countPlusTestSimple1CellPlus(){
         char[][] grid = new char[][] {
                 {'c', 'a', ' '},
                 {'a', 'a', 'a'},
@@ -88,7 +90,23 @@ public class CharGridTest {
     }
 
     @Test
-    public void testCountPlus2(){
+    public void countPlusTestSimple2CellPlus(){
+        char[][] grid = new char[][] {
+                {' ', ' ', 'v', ' ', ' '},
+                {' ', ' ', 'v', ' ', ' '},
+                {'v', 'v', 'v', 'v', 'v'},
+                {' ', ' ', 'v', ' ', ' '},
+                {' ', ' ', 'v', ' ', ' '}
+
+        };
+
+        CharGrid cg = new CharGrid(grid);
+
+        assertEquals(1, cg.countPlus());
+    }
+
+    @Test
+    public void countPlusTest2CellAnd1Cell2Pluses(){
         char[][] grid = new char[][] {
                 {'c', 'v', ' ', 'a', ' ', 'a', ' ', 'a', ' '},
                 {'v', 'v', 'v', 'a', ' ', 'v', ' ', 'a', ' '},
@@ -104,9 +122,9 @@ public class CharGridTest {
     }
 
     @Test
-    public void testCountPlus3(){
+    public void countPlusTestOnlyFirstRow(){
         char[][] grid = new char[][] {
-                {'c', 'c', 'c', 'a', ' ', 'a', ' ', 'a', ' '},
+                {'c', 'c', 'c'}
         };
 
         CharGrid cg = new CharGrid(grid);
@@ -115,7 +133,7 @@ public class CharGridTest {
     }
 
     @Test
-    public void testCountPlus4(){
+    public void countPlusTestOnlyFirstCol(){
         char[][] grid = new char[][] {
                 {'a'},
                 {'a'},
@@ -127,23 +145,9 @@ public class CharGridTest {
 
         assertEquals(0, cg.countPlus());
     }
-    @Test
-    public void testCountPlus5(){
-        char[][] grid = new char[][] {
-                {'c', 'v', ' ', 'a', ' ', 'a', ' ', 'a', ' '},
-                {'v', 'v', 'v', 'v', ' ', 'v', ' ', 'v', ' '},
-                {' ', 'v', ' ', 'a', ' ', 'v', ' ', 'v', ' '},
-                {' ', 'v', ' ', 'v', ' ', 'v', 'v', 'v', 'v'},
-                {' ', 'a', ' ', 'a', ' ', 'v', ' ', 'v', ' '},
-                {' ', 'a', ' ', 'a', ' ', 'v', ' ', 'v', ' '}
-        };
 
-        CharGrid cg = new CharGrid(grid);
-
-        assertEquals(0, cg.countPlus());
-    }
     @Test
-    public void testCountPlus6(){
+    public void countPlusTestOneSideExtraCell(){
         char[][] grid = new char[][] {
                 {'c', 'v', ' ' },
                 {'v', 'v', 'v' },
@@ -157,7 +161,7 @@ public class CharGridTest {
         assertEquals(0, cg.countPlus());
     }
     @Test
-    public void testCountPlus7(){
+    public void countPlusTestEmptyGrid(){
         char[][] grid = new char[][] {  };
 
         CharGrid cg = new CharGrid(grid);
@@ -165,7 +169,7 @@ public class CharGridTest {
         assertEquals(0, cg.countPlus());
     }
     @Test
-    public void testCountPlus8(){
+    public void countPlusTestSameLetterFilledGrid(){
         char[][] grid = new char[][] {
                 { 'v', 'v', 'v' },
                 { 'v', 'v', 'v' },
@@ -178,7 +182,7 @@ public class CharGridTest {
         assertEquals(1, cg.countPlus());
     }
     @Test
-    public void testCountPlus9() {
+    public void countPlusTestSingleCell() {
         char[][] grid = new char[][] {
                 {'c'}
         };

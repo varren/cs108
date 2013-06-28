@@ -69,12 +69,21 @@ public class StringCodeTest {
 	}
 
 	@Test
-	public void testIntersect(){
-        assertTrue(StringCode.stringIntersect("12345","12345",2));
+	public void testIntersect1(){
+        assertTrue(StringCode.stringIntersect("12","12",2));
+        assertTrue(StringCode.stringIntersect("123","123",2));
+        assertTrue(StringCode.stringIntersect("1234","1234",0));
+        assertFalse(StringCode.stringIntersect("1234","1234",5));
+    }
+    @Test
+    public void testIntersect2(){
         assertTrue(StringCode.stringIntersect("2345","",0));
         assertTrue(StringCode.stringIntersect("1","1",1));
         assertFalse(StringCode.stringIntersect("123","12",3));
-        assertFalse(StringCode.stringIntersect("12","12",3));
-        assertFalse(StringCode.stringIntersect("","",3));
+
+    }
+    @Test
+    public void testIntersect3(){
+        assertFalse(StringCode.stringIntersect("","",1));
     }
 }
