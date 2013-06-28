@@ -37,11 +37,11 @@ public class Taboo<T> {
      * Returns the set of elements which should not follow
      * the given element.
      *
-     * @param elem  given elem
+     * @param elem given elem
      * @return elements which should not follow the given element
      */
     public Set<T> noFollow(T elem) {
-        if(database.containsKey(elem))
+        if (database.containsKey(elem))
             return database.get(elem);
         else
             return Collections.emptySet();

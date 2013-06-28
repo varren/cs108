@@ -1,14 +1,16 @@
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
 
 public class Appearances {
-	
-	/**
-	 * Returns the number of elements that appear the same number
-	 * of times in both collections. Static method. (see handout).
-	 * @return number of same-appearance elements
-	 */
-	public static <T> int sameCount(Collection<T> a, Collection<T> b) {
-		HashMap<T, Integer> aHash = new HashMap<T, Integer>();
+
+    /**
+     * Returns the number of elements that appear the same number
+     * of times in both collections. Static method. (see handout).
+     *
+     * @return number of same-appearance elements
+     */
+    public static <T> int sameCount(Collection<T> a, Collection<T> b) {
+        HashMap<T, Integer> aHash = new HashMap<T, Integer>();
         HashMap<T, Integer> bHash = new HashMap<T, Integer>();
 
         calculateAppearances(a, aHash);
@@ -16,14 +18,14 @@ public class Appearances {
 
         int result = 0;
 
-        for (T value: aHash.keySet())
-            if(bHash.containsKey(value)
+        for (T value : aHash.keySet())
+            if (bHash.containsKey(value)
                     && aHash.get(value).equals(bHash.get(value)))
                 result++;
 
 
         return result;
-	}
+    }
 
     private static <T> void calculateAppearances(Collection<T> a, HashMap<T, Integer> aHash) {
         for (T nextValue : a) {
