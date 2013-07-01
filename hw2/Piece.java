@@ -1,5 +1,5 @@
 // Piece.java
-package tetris;
+
 
 import java.util.*;
 
@@ -30,18 +30,40 @@ public class Piece {
 
 	static private Piece[] pieces;	// singleton static array of first rotations
 
+
 	/**
 	 Defines a new piece given a TPoint[] array of its body.
 	 Makes its own copy of the array and the TPoints inside it.
 	*/
 	public Piece(TPoint[] points) {
-		// YOUR CODE HERE
-	}
-	
+        Arrays.sort(points);
+        this.body = points;
 
-	
-	
-	/**
+        int width  = 0;
+        int height = 0;
+
+        for (TPoint point : points){
+            if(width  <= point.x) width  = point.x + 1;
+            if(height <= point.y) height = point.y + 1;
+        }
+
+        int []skirt = new int[width];
+        Arrays.fill(skirt, 1);
+
+        for (TPoint point : points)
+            if(point.y == 0)
+                skirt[point.x] = 0;
+
+
+        this.skirt = skirt;
+        this.width = width;
+        this.height = height;
+
+	}
+
+
+
+    /**
 	 * Alternate constructor, takes a String with the x,y body points
 	 * all separated by spaces, such as "0 0  1 0  2 0	1 1".
 	 * (provided)
@@ -88,7 +110,12 @@ public class Piece {
 	 rotated from the receiver.
 	 */
 	public Piece computeNextRotation() {
-		return null; // YOUR CODE HERE
+        TPoint[] newBody = new TPoint[body.length];
+
+        for (int i = 0;i< body.length;i++)
+            newBody[i] = new TPoint(height - 1- body[i].y, body[i].x);
+
+        return new Piece(newBody);
 	}
 
 	/**
@@ -121,7 +148,7 @@ public class Piece {
 		Piece other = (Piece)obj;
 		
 		// YOUR CODE HERE
-		return true;
+		return Arrays.equals(other.body, this.body);
 	}
 
 
@@ -167,8 +194,8 @@ public class Piece {
 				makeFastRotations(new Piece(PYRAMID_STR)),
 			};
 		}
-		
-		
+
+
 		return Piece.pieces;
 	}
 	
@@ -187,9 +214,24 @@ public class Piece {
 	 to the first piece.
 	*/
 	private static Piece makeFastRotations(Piece root) {
-		return null; // YOUR CODE HERE
+
+        root.next = recMakeFastRotations(root, root);
+
+		return root; // YOUR CODE HERE
 	}
-	
+
+
+
+
+    private static Piece recMakeFastRotations(Piece root, Piece nextRotation){
+        Piece currPosition = nextRotation.computeNextRotation();
+        if (currPosition.equals(root)) {
+            return root;
+        }else {
+            currPosition.next = recMakeFastRotations(root, currPosition);
+            return currPosition;
+        }
+    }
 	
 
 	/**
@@ -217,7 +259,6 @@ public class Piece {
 		return array;
 	}
 
-	
 
 
 }

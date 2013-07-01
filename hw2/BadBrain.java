@@ -1,6 +1,4 @@
 // BadBrain.java
-package tetris;
-
 /**
  A joke implementation based on DefaultBrain --
  plays very, very badly by recommending the

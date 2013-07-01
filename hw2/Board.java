@@ -1,5 +1,8 @@
 // Board.java
-package tetris;
+
+
+import javax.print.attribute.IntegerSyntax;
+import java.util.Arrays;
 
 /**
  CS108 Tetris Board.
@@ -16,8 +19,12 @@ public class Board	{
 	private boolean[][] grid;
 	private boolean DEBUG = true;
 	boolean committed;
-	
-	
+    private int[] heights;
+    private int[] widths;
+	private int maxHeight;
+    private static final int INITIAL_HEIGHT =0;
+    private static final boolean FREE_CELL = false;
+    private static final boolean FILLED_CELL = true;
 	// Here a few trivial methods are provided:
 	
 	/**
@@ -29,8 +36,11 @@ public class Board	{
 		this.height = height;
 		grid = new boolean[width][height];
 		committed = true;
-		
-		// YOUR CODE HERE
+		heights = new int[width];
+        widths = new int[height];
+        maxHeight = INITIAL_HEIGHT;
+        commit();
+
 	}
 	
 	
@@ -54,8 +64,8 @@ public class Board	{
 	 Returns the max column height present in the board.
 	 For an empty board this is 0.
 	*/
-	public int getMaxHeight() {	 
-		return 0; // YOUR CODE HERE
+	public int getMaxHeight() {
+ 		return maxHeight;
 	}
 	
 	
@@ -65,7 +75,26 @@ public class Board	{
 	*/
 	public void sanityCheck() {
 		if (DEBUG) {
-			// YOUR CODE HERE
+            int realMaxHeight = 0;
+            int[] realHeights = new int[width];
+            int[] realWights = new int[height];
+
+			for(int x=0; x <grid.length; x++)
+                for(int y =0; y < grid[0].length;y++)
+                    if(grid[x][y]){
+                        realWights[y]++;
+
+                        if(y>=realHeights[x]){
+                            realHeights[x]=y+1;
+                            if(realHeights[x] > realMaxHeight)
+                                realMaxHeight=realHeights[x];
+                        }
+                    }
+
+            assert(Arrays.equals(realHeights,heights));
+            assert (Arrays.equals(realWights,widths));
+            assert (realMaxHeight == maxHeight);
+
 		}
 	}
 	
@@ -79,7 +108,13 @@ public class Board	{
 	 to compute this fast -- O(skirt length).
 	*/
 	public int dropHeight(Piece piece, int x) {
-		return 0; // YOUR CODE HERE
+        int y = 0;
+        for(int i =0 ;i<piece.getWidth();i++){
+            if(piece.getSkirt()[i]==0)
+                if(getColumnHeight(x+i) > y )
+                    y = getColumnHeight(x+i)-1;
+        }
+		return y; // YOUR CODE HERE
 	}
 	
 	
@@ -89,7 +124,7 @@ public class Board	{
 	 The height is 0 if the column contains no blocks.
 	*/
 	public int getColumnHeight(int x) {
-		return 0; // YOUR CODE HERE
+		return heights[x];
 	}
 	
 	
@@ -98,7 +133,7 @@ public class Board	{
 	 the given row.
 	*/
 	public int getRowWidth(int y) {
-		 return 0; // YOUR CODE HERE
+		 return widths[y];
 	}
 	
 	
@@ -108,8 +143,8 @@ public class Board	{
 	 always return true.
 	*/
 	public boolean getGrid(int x, int y) {
-		return false; // YOUR CODE HERE
-	}
+        return x > width && y > height && y <= 0 && x <= 0 && !grid[x][y];
+    }
 	
 	
 	public static final int PLACE_OK = 0;
@@ -136,27 +171,75 @@ public class Board	{
 		if (!committed) throw new RuntimeException("place commit problem");
 			
 		int result = PLACE_OK;
-		
-		// YOUR CODE HERE
+
+        for(TPoint point: piece.getBody())
+            result = placeCell(point.x + x,point.y + y);
+
 		
 		return result;
 	}
-	
-	
-	/**
+
+    private int placeCell(int x, int y) {
+        if(x>=width || y>=height || x<0 ||y<0)
+            return  PLACE_OUT_BOUNDS;
+
+        if(grid[x][y])
+            return PLACE_BAD;
+
+        grid[x][y] = FILLED_CELL;
+        heights[x]++;
+        widths[y]++;
+        if(heights[x]>maxHeight)
+            maxHeight=heights[x];
+
+        if(widths[y]==width)
+            return PLACE_ROW_FILLED;
+
+        return PLACE_OK;
+
+    }
+
+
+    /**
 	 Deletes rows that are filled all the way across, moving
 	 things above down. Returns the number of rows cleared.
 	*/
+    private static final int EMPTY_ROW = -1;
 	public int clearRows() {
 		int rowsCleared = 0;
-		// YOUR CODE HERE
+        int lastFixedRow = 0;
+
+		for(int row = 0; row < height; row++){
+            if(widths[row] == width)
+                rowsCleared++;
+            else{
+                fixRow(lastFixedRow, row);
+                lastFixedRow++;
+            }
+        }
+
+        while(lastFixedRow < height){
+            widths[lastFixedRow] = INITIAL_HEIGHT;
+            for(int i = 0; i < width; i++){
+                grid[i][lastFixedRow] = FREE_CELL;
+                heights[i]--;
+            }
+
+            lastFixedRow++;
+        }
+
 		sanityCheck();
 		return rowsCleared;
 	}
 
+    private void fixRow(int toRow, int fromRow) {
+            widths[toRow] = widths[fromRow];
+            for(int i = 0; i < width; i++)
+                grid[i][toRow] = grid[i][fromRow];
 
+    }
 
-	/**
+    /**
 	 Reverts the board to its state before up to one place
 	 and one clearRows();
 	 If the conditions for undo() are not met, such as

@@ -1,6 +1,6 @@
 // DefaultBrain.java
 
-package tetris;
+
 
 /**
  Provided code.

@@ -1,6 +1,5 @@
 //TPoint.java
 
-package tetris;
 
 /*
  This is just a trivial "struct" type class --
@@ -9,7 +8,7 @@ package tetris;
  We'll allow public access to x/y, so this
  is not an object really.
  */
-public class TPoint {
+public class TPoint implements Comparable{
 	public int x;
 	public int y;
 
@@ -44,4 +43,23 @@ public class TPoint {
 	public String toString() {
 		return "(" + x + "," + y + ")";
 	}
+
+
+    @Override
+    public int compareTo(Object o) {
+        TPoint pt = (TPoint) o;
+
+        if (this.equals(pt))
+            return 0;
+        else if (x > pt.x)
+            return 1;
+        else if (x < pt.x)
+            return -1;
+        else if (y > pt.y)
+            return 1;
+        else
+            return -1;
+
+
+    }
 }
