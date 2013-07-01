@@ -105,6 +105,7 @@ public class PieceTest {
 		
 		assertTrue(Arrays.equals(new int[] {0, 0, 1}, s.getSkirt()));
 		assertTrue(Arrays.equals(new int[] {1, 0}, sRotated.getSkirt()));
+        assertTrue(Arrays.equals(new int[] {0, 2}, l2Rotated2.getSkirt()));
 	}
     @Test
     public void testEquals(){
@@ -136,51 +137,5 @@ public class PieceTest {
         assertFalse(pieces[Piece.S1].equals(sRotated));
     }
 
-    /*
-    //just code to test real pieces values with nice visual part;
-    private  void printPieces(Piece[] pieces) {
-        for (Piece piece : pieces) {
-            System.out.println("New obj:"+ piece.toString());
-            recPrintNextRotation(piece,piece);
 
-        }
-
-    }
-    private void recPrintNextRotation(Piece root, Piece currentPiece) {
-        Piece nextRotation = currentPiece.fastRotation();
-        if(nextRotation == null)
-            System.out.println("Next is NULL");
-        else if(!nextRotation.equals(root)){
-            System.out.println("Rotation: "+ pieceToString(nextRotation));
-            recPrintNextRotation(root,nextRotation);
-        }
-
-    }
-
-    public String pieceToString(Piece piece){
-        String result = "";
-
-        for(int i =0; i< piece.getWidth();i++){
-            result += "\n";
-            for(int j = 0; j <piece.getHeight();j++){
-                TPoint point = new TPoint(i,j);
-                if(containsPoint(point,piece.getBody()))
-                    result+="X";
-                else
-                    result+= " ";
-            }
-        }
-
-        return result;
-    }
-
-    private boolean containsPoint(TPoint point, TPoint[] body) {
-        for (TPoint aBody : body)
-            if (aBody.equals(point))
-                return true;
-
-        return false;
-
-    }
-      */
 }

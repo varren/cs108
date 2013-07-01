@@ -22,12 +22,18 @@ public class Board	{
     private int[] heights;
     private int[] widths;
 	private int maxHeight;
+
     private static final int INITIAL_HEIGHT =0;
     private static final boolean FREE_CELL = false;
     private static final boolean FILLED_CELL = true;
-	// Here a few trivial methods are provided:
-	
-	/**
+
+    private boolean[][] Xgrid;
+    private int[] Xheights;
+    private int[] Xwidths;
+    private int XmaxHeight;
+
+    // Here a few trivial methods are provided:
+    /**
 	 Creates an empty board of the given width and height
 	 measured in blocks.
 	*/
@@ -39,9 +45,17 @@ public class Board	{
 		heights = new int[width];
         widths = new int[height];
         maxHeight = INITIAL_HEIGHT;
+
+        Xgrid = new boolean[width][height];
+        Xheights = new int[width];
+        Xwidths = new int[height];
+
         commit();
 
 	}
+
+
+
 	
 	
 	/**
@@ -85,12 +99,13 @@ public class Board	{
                         realWights[y]++;
 
                         if(y>=realHeights[x]){
-                            realHeights[x]=y+1;
+                            realHeights[x]=y + 1;
                             if(realHeights[x] > realMaxHeight)
                                 realMaxHeight=realHeights[x];
                         }
                     }
-
+            System.out.println(this.toString());
+            //System.out.println(Arrays.toString(heights) + Arrays.toString(realHeights));
             assert(Arrays.equals(realHeights,heights));
             assert (Arrays.equals(realWights,widths));
             assert (realMaxHeight == maxHeight);
@@ -109,11 +124,13 @@ public class Board	{
 	*/
 	public int dropHeight(Piece piece, int x) {
         int y = 0;
-        for(int i =0 ;i<piece.getWidth();i++){
-            if(piece.getSkirt()[i]==0)
-                if(getColumnHeight(x+i) > y )
-                    y = getColumnHeight(x+i)-1;
+
+        for(int i =0 ;i < piece.getWidth();i++)  {
+            int possibleY = getColumnHeight(x + i)- piece.getSkirt()[i];
+            if (possibleY > 0 && y < possibleY)
+                    y = possibleY;
         }
+
 		return y; // YOUR CODE HERE
 	}
 	
@@ -143,7 +160,7 @@ public class Board	{
 	 always return true.
 	*/
 	public boolean getGrid(int x, int y) {
-        return x > width && y > height && y <= 0 && x <= 0 && !grid[x][y];
+        return x >= width || y >= height || y < 0 || x < 0 || grid[x][y];
     }
 	
 	
@@ -169,63 +186,70 @@ public class Board	{
 	public int place(Piece piece, int x, int y) {
 		// flag !committed problem
 		if (!committed) throw new RuntimeException("place commit problem");
-			
+        committed=false;
+        saveState();
 		int result = PLACE_OK;
 
-        for(TPoint point: piece.getBody())
-            result = placeCell(point.x + x,point.y + y);
+        for(TPoint point: piece.getBody()){
 
-		
+            int currX = point.x + x;
+            int currY = point.y + y;
+
+            if(currX>=width || currY>=height || currX<0 || currY <0)
+                return  PLACE_OUT_BOUNDS;
+
+            if(grid[currX][currY])
+                return PLACE_BAD;
+
+            grid[currX][currY] = FILLED_CELL;
+            if(heights[currX] < currY + 1)
+                heights[currX]= currY + 1;
+
+            widths[currY]++;
+
+            if(heights[currX]>maxHeight)
+                maxHeight=heights[currX];
+
+            if(widths[currY]==width)
+                result = PLACE_ROW_FILLED;
+
+        }
+        //System.out.println("afterPlace: "+Arrays.toString(heights) );
 		return result;
 	}
 
-    private int placeCell(int x, int y) {
-        if(x>=width || y>=height || x<0 ||y<0)
-            return  PLACE_OUT_BOUNDS;
-
-        if(grid[x][y])
-            return PLACE_BAD;
-
-        grid[x][y] = FILLED_CELL;
-        heights[x]++;
-        widths[y]++;
-        if(heights[x]>maxHeight)
-            maxHeight=heights[x];
-
-        if(widths[y]==width)
-            return PLACE_ROW_FILLED;
-
-        return PLACE_OK;
-
-    }
 
 
     /**
 	 Deletes rows that are filled all the way across, moving
 	 things above down. Returns the number of rows cleared.
 	*/
-    private static final int EMPTY_ROW = -1;
-	public int clearRows() {
-		int rowsCleared = 0;
-        int lastFixedRow = 0;
 
-		for(int row = 0; row < height; row++){
-            if(widths[row] == width)
+	public int clearRows() {
+        committed=false;
+
+		int rowsCleared = 0;
+        int toRow = 0;
+
+		for(int fromRow = 0; fromRow < height; fromRow++){
+            if(widths[fromRow] == width)
                 rowsCleared++;
-            else{
-                fixRow(lastFixedRow, row);
-                lastFixedRow++;
+            else if(rowsCleared > 0){
+                fixRow(toRow, fromRow);
+                toRow++;
             }
+            else
+                toRow++;
         }
 
-        while(lastFixedRow < height){
-            widths[lastFixedRow] = INITIAL_HEIGHT;
+        while(toRow < height){
+            widths[toRow] = INITIAL_HEIGHT;
             for(int i = 0; i < width; i++){
-                grid[i][lastFixedRow] = FREE_CELL;
+                grid[i][toRow] = FREE_CELL;
                 heights[i]--;
             }
-
-            lastFixedRow++;
+            maxHeight--;
+            toRow++;
         }
 
 		sanityCheck();
@@ -246,19 +270,47 @@ public class Board	{
 	 calling undo() twice in a row, then the second undo() does nothing.
 	 See the overview docs.
 	*/
-	public void undo() {
-		// YOUR CODE HERE
-	}
-	
+    public void undo() {
+
+        if (!committed) {
+            committed = true;
+
+            boolean[][] temp = grid;
+            grid = Xgrid;
+            Xgrid = temp;
+
+            int[] tempX = heights;
+            heights = Xheights;
+            Xheights = tempX;
+
+            int[] tempY = widths;
+            widths = Xwidths;
+            Xwidths = tempY;
+
+            maxHeight = XmaxHeight;
+        }
+    }
+
 	
 	/**
 	 Puts the board in the committed state.
 	*/
 	public void commit() {
-		committed = true;
+        if (!committed) {
+		    committed = true;
+
+
+        }
 	}
+     private void saveState(){
+         for(int i =0;i < width;i++)
+             System.arraycopy(grid[i], 0, Xgrid[i], 0, height);
 
+         System.arraycopy(heights, 0, Xheights, 0, width);
+         System.arraycopy(widths, 0, Xwidths, 0, height);
 
+         XmaxHeight = maxHeight;
+     }
 	
 	/*
 	 Renders the board state as a big String, suitable for printing.

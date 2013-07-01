@@ -1,6 +1,7 @@
 // Piece.java
 
 
+import javax.swing.plaf.basic.BasicInternalFrameTitlePane;
 import java.util.*;
 
 /**
@@ -48,11 +49,11 @@ public class Piece {
         }
 
         int []skirt = new int[width];
-        Arrays.fill(skirt, 1);
+        Arrays.fill(skirt, height);
 
         for (TPoint point : points)
-            if(point.y == 0)
-                skirt[point.x] = 0;
+            if(skirt[point.x] > point.y)
+                skirt[point.x] = point.y;
 
 
         this.skirt = skirt;
@@ -155,7 +156,7 @@ public class Piece {
 	// String constants for the standard 7 tetris pieces
 	public static final String STICK_STR	= "0 0	0 1	 0 2  0 3";
 	public static final String L1_STR		= "0 0	0 1	 0 2  1 0";
-	public static final String L2_STR		= "0 0	1 0 1 1	 1 2";
+	public static final String L2_STR		= "0 0	1 0  1 1  1 2";
 	public static final String S1_STR		= "0 0	1 0	 1 1  2 1";
 	public static final String S2_STR		= "0 1	1 1  1 0  2 0";
 	public static final String SQUARE_STR	= "0 0  0 1  1 0  1 1";
@@ -259,6 +260,29 @@ public class Piece {
 		return array;
 	}
 
+    @Override
+    public String toString(){
+        String result = "";
+        boolean [][] grid = new boolean[height][width];
 
+        for(TPoint p : body)
+            grid[p.y][p.x]=true;
+        //System.out.println(Arrays.deepToString(grid));
+
+        for(int i =0; i< height;i++){
+            String line = "\n";
+
+            for(int j = 0; j < width;j++)
+                if(grid[i][j])
+                    line+="+";
+                else
+                    line+= " ";
+
+            result = line + result;
+
+        }
+
+        return result;
+    }
 
 }
