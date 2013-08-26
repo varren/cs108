@@ -6,19 +6,12 @@ public class JBrainTetris extends JTetris {
     private Brain brain;
     private boolean seenPiece;
     private Brain.Move move;
-
-
     //GUI
     private JCheckBox brainMode;
     private JCheckBox animateMode;
     private JSlider  adversary;
-    private JPanel little;
     private JLabel adversaryStatus;
 
-    /**
-     * Creates a new JTetris where each tetris square
-     * is drawn with the given number of pixels.
-     */
     JBrainTetris(int pixels) {
         super(pixels);
         brain = new DefaultBrain();
@@ -28,20 +21,15 @@ public class JBrainTetris extends JTetris {
     public JComponent createControlPanel() {
         JPanel panel = (JPanel)super.createControlPanel();
 
-        // make a little panel, put a JSlider in it. JSlider responds to getValue()
-        little = new JPanel();
-        // COUNT
-        adversaryStatus = new JLabel("OK ");
+        // Adversary - slider - ok status
+        JPanel little = new JPanel();
+        adversaryStatus = new JLabel("OK -");
         little.add(adversaryStatus);
         little.add(new JLabel("Adversary:"));
-
         adversary = new JSlider(0, 100, 0); // min, max, current
         adversary.setPreferredSize(new Dimension(100,15));
         little.add(adversary); // now add little to panel of controls
-
         panel.add(little);
-
-
 
         // Brain active
         brainMode = new JCheckBox("Brain active");
@@ -57,7 +45,6 @@ public class JBrainTetris extends JTetris {
 
     @Override
     public void tick(int verb) {
-
         if (brainMode.isSelected() && verb == DOWN) {
 
             if (!seenPiece) {
@@ -89,7 +76,7 @@ public class JBrainTetris extends JTetris {
         if (random.nextInt(99) < adversary.getValue()) {
             Piece nextPiece = super.pickNextPiece();
 
-            adversaryStatus.setText("OK*");
+            adversaryStatus.setText("OK- ");
             double worstScore = 0;
             for (Piece piece : pieces) {
                 board.undo();
@@ -102,13 +89,10 @@ public class JBrainTetris extends JTetris {
             return nextPiece;
         }
 
-        adversaryStatus.setText("OK ");
+        adversaryStatus.setText("OK -");
         return super.pickNextPiece();
-
-
-
-
     }
+
     /**
      Creates a frame with a JTetris.
      */

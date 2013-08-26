@@ -53,9 +53,23 @@ public class Taboo<T> {
      *
      * @param list collection to reduce
      */
+    @SuppressWarnings("unchecked")
     public void reduce(List<T> list) {
 
         T currValue = null;
+        Iterator itr =list.iterator();
+
+        while(itr.hasNext()){
+            T nextValue = (T)itr.next();
+
+            if (currValue != null && nextValue != null
+                    && database.containsKey(currValue)
+                    && database.get(currValue).contains(nextValue))
+                itr.remove();
+            else
+                currValue = nextValue;
+        }
+        /*      // initial code
         int listSize = list.size();
         for (int i = 0; i < listSize; i++) {
             T nextValue = list.get(i);
@@ -70,5 +84,6 @@ public class Taboo<T> {
             } else
                 currValue = nextValue;
         }
+        */
     }
 }
