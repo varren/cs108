@@ -104,7 +104,7 @@ public class Board	{
                                 realMaxHeight=realHeights[x];
                         }
                     }
-            System.out.println(this.toString());
+            //System.out.println(this.toString());
             //System.out.println(Arrays.toString(heights) + Arrays.toString(realHeights));
             assert(Arrays.equals(realHeights,heights));
             assert (Arrays.equals(realWights,widths));

@@ -49,7 +49,7 @@ public class JTetris extends JComponent {
 	
 	// When this is true, plays a fixed sequence of 100 pieces
 	protected boolean testMode = false;
-	public final int TEST_LIMIT = 100;
+	public final int TEST_LIMIT = 1000;
 	
 	// Is drawing optimized
 	// (default false, so debugging is easier)
