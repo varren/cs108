@@ -1,4 +1,4 @@
-package assign3;
+
 
 import java.util.*;
 
@@ -48,12 +48,31 @@ public class Sudoku {
 	"6 0 0 0 2 1 0 4 0",
 	"0 0 0 5 3 0 9 0 0",
 	"0 3 0 0 0 0 0 5 1");
+
+    public static final int[][] zeroGrid = Sudoku.stringsToGrid(
+            "0 0 0 0 0 0 0 0 0",
+            "0 0 0 0 0 0 0 0 0",
+            "0 0 0 0 0 0 0 0 0",
+            "0 0 0 0 0 0 0 0 0",
+            "0 0 0 0 0 0 0 0 0",
+            "0 0 0 0 0 0 0 0 0",
+            "0 0 0 0 0 0 0 0 0",
+            "0 0 0 0 0 0 0 0 0",
+            "0 0 0 0 0 0 0 0 0");
 	
 	
 	public static final int SIZE = 9;  // size of the whole 9x9 puzzle
 	public static final int PART = 3;  // size of each 3x3 part
 	public static final int MAX_SOLUTIONS = 100;
-	
+
+    private int[][] grid;
+    private int[][] solution;
+    ArrayList<Spot> spotList;
+
+    private int solutionsCounter;
+    private long elapsedTime;
+
+
 	// Provided various static utility methods to
 	// convert data formats to int[][] grid.
 	
@@ -126,7 +145,7 @@ public class Sudoku {
 	// solving hardGrid.
 	public static void main(String[] args) {
 		Sudoku sudoku;
-		sudoku = new Sudoku(hardGrid);
+		sudoku = new Sudoku(easyGrid);
 		
 		System.out.println(sudoku); // print the raw problem
 		int count = sudoku.solve();
@@ -135,31 +154,142 @@ public class Sudoku {
 		System.out.println(sudoku.getSolutionText());
 	}
 	
-	
-	
+	/*
+	 * Spot inner Class to store unassigned spots in grid
+	 *
+	 */
+	private class Spot implements Comparable{
+
+        private int row, col, validValsCounter;
+
+        public Spot(int row, int col) {
+           this.row = row;
+           this.col = col;
+           validValsCounter = getValidValues().size();
+        }
+
+        public void set(int value) { grid[row][col] = value; }
+
+        private HashSet<Integer> getValidValues() {
+            HashSet<Integer> validSet = new HashSet<Integer>(Arrays.asList(1,2,3,4,5,6,7,8,9));
+
+            for(int i = 0; i < SIZE; i++) {
+                validSet.remove(grid[i][col]); // removing col occupied values
+                validSet.remove(grid[row][i]); // removing row occupied values
+                validSet.remove(grid[row/PART * PART + i/PART][col/PART * PART  + i%PART]); //removing block occupied values
+            }
+
+            return validSet;
+        }
+
+        @Override
+        public int compareTo(Object elem){
+            Spot cmp = (Spot)elem;
+            return this.validValsCounter - cmp.validValsCounter;
+        }
+    }
 
 	/**
 	 * Sets up based on the given ints.
 	 */
 	public Sudoku(int[][] ints) {
-		// YOUR CODE HERE
+        assert (ints.length == SIZE && ints[0].length == SIZE);
+        grid = ints;
+        solution = new int[SIZE][SIZE];
+        solutionsCounter = 0;
+        createSpotList();
 	}
-	
-	
+
+    private void createSpotList() {
+        spotList = new ArrayList<Spot>();
+
+        for(int row = 0; row < SIZE; row++)
+            for(int col = 0; col < SIZE; col++)
+                if(grid[row][col] == 0){
+                    spotList.add(new Spot(row, col));
+                }
+
+        Collections.sort(spotList);
+    }
+
+    public Sudoku(String values) {
+        this(textToGrid(values));
+    }
+
+    @Override
+	public String toString(){
+        return toString(grid);
+    }
 	
 	/**
 	 * Solves the puzzle, invoking the underlying recursive search.
 	 */
+
 	public int solve() {
-		return 0; // YOUR CODE HERE
+        long startTime = System.currentTimeMillis();
+
+        solutionHelper(0);   // run algorithm...
+
+        long endTime = System.currentTimeMillis();
+
+		elapsedTime = endTime - startTime;
+        return solutionsCounter;
 	}
-	
-	public String getSolutionText() {
-		return ""; // YOUR CODE HERE
+
+    public String getSolutionText() {
+		return toString(solution);
 	}
 	
 	public long getElapsed() {
-		return 0; // YOUR CODE HERE
+		return elapsedTime;
 	}
+
+
+    /********************************************************************/
+    /**************************Helper Functions**************************/
+    /********************************************************************/
+
+    private String toString(int[][] grid){
+
+        String result = "";
+
+        if(grid != null)
+            for(int i = 0;i<SIZE;i++){
+                for(int j =0;j<SIZE;j++)
+                    result+= grid[i][j]+" ";
+                result+="\n";
+            }
+
+        return result;
+    }
+
+    private void solutionHelper(int position) {
+
+        if(solutionsCounter >= MAX_SOLUTIONS) return;
+
+        //found solution
+        if(position == spotList.size()){
+            if(solutionsCounter == 0)
+                saveSolution(); // Save 1-st solution
+            solutionsCounter++;
+            return;
+        }
+
+        Spot currentSpot = spotList.get(position);
+        HashSet<Integer> valuesSet = currentSpot.getValidValues();
+
+        for(int value: valuesSet){
+            currentSpot.set(value);
+            solutionHelper(position + 1);
+            currentSpot.set(0);
+        }
+
+    }
+
+    private void saveSolution() {
+        for(int i = 0 ;i < SIZE; i++)
+            System.arraycopy(grid[i], 0, solution[i], 0, SIZE);
+    }
+
 
 }
