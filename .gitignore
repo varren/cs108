@@ -5,3 +5,6 @@
 out/
 META-INF/
 DemoFiles/
+*.jpg
+MyDBDemo.java
+lib/

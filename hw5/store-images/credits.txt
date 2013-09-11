@@ -1,0 +1,7 @@
+All clothing images are from the Stanford Store website.  
+
+http://store.stanford.edu/
+
+The Stanford Store is student run and located in Tresidder Union.
+
+All jpg files removed from git, so you have to download them one more time or change with your own

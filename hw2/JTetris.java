@@ -220,7 +220,7 @@ public class JTetris extends JComponent {
 		// Set mode based on checkbox at start of game
 		testMode = testButton.isSelected();
 		
-		if (testMode) random = new Random(0);	// same seq every time
+		if (testMode) random = new Random();	// same seq every time
 		else random = new Random(); // diff seq each game
 		
 		enableButtons();
