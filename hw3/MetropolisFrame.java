@@ -4,13 +4,13 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class DBFrame extends JFrame{
+public class MetropolisFrame extends JFrame{
 
     private static final int TEXT_FIELDS_SIZE = 10;
     private static final String POPULATION_SMALLER = "Population Smaller Then";
     private static final String POPULATION_LARGER  = "Population Larger Then";
-    private static final String MATCH_OPTION1  = "Exact Match";
-    private static final String MATCH_OPTION2  = "Partial Match";
+    private static final String EXACT_MATCH = "Exact Match";
+    private static final String PARTIAL_MATCH = "Partial Match";
 
     private JTextField metropolisField;
     private JTextField continentField;
@@ -19,17 +19,16 @@ public class DBFrame extends JFrame{
     private JComboBox matchTypePulldown;
     private JButton addButton;
     private JButton searchButton;
-    JTable dataTable;
+    private JTable dataTable;
 
     private MetropolisModel metropolisModel;
 
-    public DBFrame(){
+    public MetropolisFrame(){
         super("Metropolis Viewer");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
         setLayout(new BorderLayout(4,4));
 
-        //Top menu
+        // Top menu
         JPanel topPanel = new JPanel();
 
         metropolisField = new JTextField(TEXT_FIELDS_SIZE);
@@ -43,12 +42,13 @@ public class DBFrame extends JFrame{
         topPanel.add(new JLabel(" Population: "));
         topPanel.add(populationField);
 
-        //Center data table
+        // Center data table
         metropolisModel = new MetropolisModel();
-
         dataTable = new JTable(metropolisModel);
+        JScrollPane scrollTable = new JScrollPane(dataTable);
+        scrollTable.setPreferredSize(new Dimension(300,200));
 
-        //Side menu
+        // Side menu
         Box sideMenu = Box.createVerticalBox();
 
         addButton = new JButton("Add");
@@ -56,29 +56,22 @@ public class DBFrame extends JFrame{
 
         Box innerSideMenu = Box.createVerticalBox();
         innerSideMenu.setBorder(new TitledBorder("Search options"));
-
         populationPulldown = new JComboBox(new String[]{POPULATION_LARGER, POPULATION_SMALLER});
-        matchTypePulldown = new JComboBox(new String[]{MATCH_OPTION1, MATCH_OPTION2});
+        matchTypePulldown = new JComboBox(new String[]{EXACT_MATCH, PARTIAL_MATCH});
 
-        addButton.setAlignmentX( JComponent.LEFT_ALIGNMENT);
-        searchButton.setAlignmentX( JComponent.LEFT_ALIGNMENT);
-        populationPulldown.setAlignmentX( JComponent.LEFT_ALIGNMENT);
-        matchTypePulldown.setAlignmentX( JComponent.LEFT_ALIGNMENT);
-
-        setMaxSize(populationPulldown);
-        setMaxSize(matchTypePulldown);
-
+        alignSideMenu();
         addActionListeners();
 
-        // Adding everything on field
+        // Adding everything on side menu panel
         sideMenu.add(addButton);
         sideMenu.add(searchButton);
         innerSideMenu.add(populationPulldown);
         innerSideMenu.add(matchTypePulldown);
         sideMenu.add(innerSideMenu);
 
+        // Adding everything on frame
         add(topPanel, BorderLayout.NORTH);
-        add(dataTable,BorderLayout.CENTER);
+        add(scrollTable, BorderLayout.CENTER);
         add(sideMenu,BorderLayout.EAST);
 
         pack();
@@ -87,11 +80,10 @@ public class DBFrame extends JFrame{
 
     private void addActionListeners(){
 
-
         addButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                metropolisModel.add(metropolisField.getText(),continentField.getText(),populationField.getText());
+            metropolisModel.add(metropolisField.getText(),continentField.getText(),populationField.getText());
 
             }
         });
@@ -100,7 +92,7 @@ public class DBFrame extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 boolean larger = populationPulldown.getSelectedItem().equals(POPULATION_LARGER);
-                boolean exact = matchTypePulldown.getSelectedItem().equals(MATCH_OPTION1);
+                boolean exact = matchTypePulldown.getSelectedItem().equals(EXACT_MATCH);
                 metropolisModel.search(metropolisField.getText(),
                         continentField.getText(), populationField.getText(), larger, exact);
 
@@ -108,14 +100,19 @@ public class DBFrame extends JFrame{
             }
         });
     }
+    private void alignSideMenu() {
+        addButton.setAlignmentX( JComponent.LEFT_ALIGNMENT);
+        searchButton.setAlignmentX( JComponent.LEFT_ALIGNMENT);
+        populationPulldown.setAlignmentX( JComponent.LEFT_ALIGNMENT);
+        matchTypePulldown.setAlignmentX( JComponent.LEFT_ALIGNMENT);
 
-    private void setMaxSize(JComponent jc)
-    {
-        Dimension max = jc.getMaximumSize();
-        Dimension pref = jc.getPreferredSize();
-        max.height = pref.height;
-        jc.setMaximumSize(max);
+        Dimension menuSize = new Dimension(matchTypePulldown.getMaximumSize().width,
+                                           matchTypePulldown.getPreferredSize().height);
+
+        matchTypePulldown.setMaximumSize(menuSize);
+        populationPulldown.setMaximumSize(menuSize);
     }
+
 
     public static void main(String[]args){
         try {
@@ -125,6 +122,6 @@ public class DBFrame extends JFrame{
         } catch (Exception ignored) {
         }
 
-        DBFrame frame = new DBFrame();
+        MetropolisFrame frame = new MetropolisFrame();
     }
 }
