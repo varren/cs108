@@ -1,0 +1,7 @@
+Part 1 is in Bank package
+Part 2 is in HashCracker package
+Part 3 is in TheCount package
+Part 4 is in WebLoader package
+
+Can run ">java Bank small.txt 1"
+Programs will look for input file in P0InputFiles directory

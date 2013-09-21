@@ -1,8 +1,4 @@
-import java.io.*;
-import java.net.*;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import javax.swing.*;
+package P4WebLoader;
 
 public class WebWorker extends Thread {
 /*

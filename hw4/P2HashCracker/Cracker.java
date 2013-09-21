@@ -1,3 +1,5 @@
+package P2HashCracker;
+
 public class Cracker {
 	// Array of chars used to produce strings
 	public static final char[] CHARS = "abcdefghijklmnopqrstuvwxyz0123456789.,-!".toCharArray();	
