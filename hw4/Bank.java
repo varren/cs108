@@ -1,5 +1,3 @@
-package P1Bank;/* User: Peter  Date: 16.09.13  Time: 16:42 */
-
 import java.io.*;
 import java.util.ArrayList;
 import java.util.concurrent.BlockingQueue;
@@ -7,10 +5,10 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class Bank {
     private static final int DEFAULT_BALANCE = 1000;
-
-    private static final String SMALL_FILE = "C:\\Users\\Peter\\IdeaProjects\\cs108\\hw4\\P0InputFiles\\small.txt";
-    private static final String MEDIUM_FILE = "C:\\Users\\Peter\\IdeaProjects\\cs108\\hw4\\P0InputFiles\\5k.txt";
-    private static final String BIG_FILE = "C:\\Users\\Peter\\IdeaProjects\\cs108\\hw4\\P0InputFiles\\100k.txt";
+    private static final String DEFAULT_DIR = System.getProperty("user.dir")+"\\hw4\\";
+    private static final String SMALL_FILE = DEFAULT_DIR + "small.txt";
+    private static final String MEDIUM_FILE = DEFAULT_DIR + "5k.txt";
+    private static final String BIG_FILE = DEFAULT_DIR + "100k.txt";
 
     private static final int NUM_OF_ACCOUNTS = 100;
     private static final int NUM_OF_THREADS = 4;
@@ -101,14 +99,20 @@ public class Bank {
     }
 
     public static void main(String []args){
-        Bank bank = new Bank(NUM_OF_ACCOUNTS, NUM_OF_THREADS);
-        //bank.startProcessingFrom(SMALL_FILE);
-        //bank.startProcessingFrom(MEDIUM_FILE);
-        bank.startProcessingFrom(BIG_FILE);
-        bank.close();
+        try{
+            launch(args[0], NUM_OF_ACCOUNTS, Integer.parseInt(args[1]));
+        }catch (Exception e){
+            System.out.println("Incorrect args. Starting with default arguments");
+            launch(SMALL_FILE, NUM_OF_ACCOUNTS, NUM_OF_THREADS);
+        }
+
     }
 
-
+    private static void launch(String filename, int numOfAccounts, int numOfWorkers) {
+        Bank bank = new Bank(numOfAccounts, numOfWorkers);
+        bank.startProcessingFrom(filename);
+        bank.close();
+    }
 
 
 }

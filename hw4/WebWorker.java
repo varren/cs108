@@ -1,5 +1,3 @@
-package P4WebLoader;
-
 public class WebWorker extends Thread {
 /*
   This is the core web/download i/o code...

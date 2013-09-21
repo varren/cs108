@@ -1,5 +1,3 @@
-package P1Bank;/* User: Peter  Date: 16.09.13  Time: 16:42 */
-
 public class Account {
     private int id;
     private int balance;
