@@ -28,7 +28,7 @@ public class WebFrame extends JFrame {
     private JTextField threadNumInputField;
     private JProgressBar progressBar;
 
-    private long elapsedTime;
+    private long startTime;
     private AtomicInteger threadsRunning;
     private AtomicInteger threadsComplete;
 
@@ -109,7 +109,15 @@ public class WebFrame extends JFrame {
                 if(launcher != null)
                     launcher.interrupt();
 
-                launcher = new WebLauncher(threadNumInputField.getText(),model.getRowCount());
+                int threadsNum;
+
+                try{
+                   threadsNum = Integer.parseInt(threadNumInputField.getText());
+                }catch (NumberFormatException ignore){
+                   threadsNum = 1;     // will run only 1 thread if user entered not int
+                }
+
+                launcher = new WebLauncher(threadsNum, model.getRowCount());
                 launcher.start();
             }
         });
@@ -133,19 +141,24 @@ public class WebFrame extends JFrame {
      *
      * */
 
-      public void changeTableData(final String data,final int row){
-         //can probably make it in any thread... don't know the correct way...
-         SwingUtilities.invokeLater(new Runnable() {
-             public void run() {
-                 model.setValueAt(data, row, 1);
-             }
-         });
+      public void changeTableData(final String data, final int row){
+//         can probably make it in any thread... don't know the correct way...
+//         SwingUtilities.invokeLater(new Runnable() {
+//             public void run() {
+//                 model.setValueAt(data, row, 1);
+//             }
+//         });
+
+          model.setValueAt(data, row, 1);
      }
 
     public String getUrl(int row){
-        synchronized (model){  //don't really know, do i need to synchronize it or not
-           return (String) model.getValueAt(row,0);
-        }
+//        don't really know, do i need to synchronize it or not
+//        synchronized (model){
+//            return (String) model.getValueAt(row,0);
+//        }
+
+        return (String) model.getValueAt(row,0);
     }
 
     /*
@@ -157,7 +170,7 @@ public class WebFrame extends JFrame {
     * */
 
      public void startFetchAnimation(){
-        elapsedTime = System.currentTimeMillis();
+         startTime = System.currentTimeMillis();
 
         SwingUtilities.invokeLater(new Runnable() {
             @Override
@@ -175,7 +188,7 @@ public class WebFrame extends JFrame {
     }
 
     public void stopFetchAnimation() {
-        elapsedTime = System.currentTimeMillis() - elapsedTime;
+
 
         SwingUtilities.invokeLater(new Runnable() {
             @Override
@@ -183,18 +196,20 @@ public class WebFrame extends JFrame {
                 singleThreadButton.setEnabled(true);
                 concurrentButton.setEnabled(true);
                 stopButton.setEnabled(false);
-                elapsedLabel.setText("Elapsed:" + elapsedTime);
+
 
             }
         });
     }
 
     private void updateUIProgress(){
+        final long elapsedTime = System.currentTimeMillis() - startTime;
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 runningLabel.setText("Running:" + threadsRunning);
                 completedLabel.setText("Complete:" + threadsComplete);
                 progressBar.setValue(threadsComplete.get());
+                elapsedLabel.setText("Elapsed:" + elapsedTime);
             }
         });
 
@@ -215,21 +230,19 @@ public class WebFrame extends JFrame {
         private int numberOfSites;
 
         public WebLauncher(int numOfThreads, int numberOfSites){
-            threadsRunning = new AtomicInteger(0);
+            threadsRunning = new AtomicInteger(1);
             threadsComplete = new AtomicInteger(0);
             workersCounter = new Semaphore(numOfThreads);
             this.numberOfSites = numberOfSites;
-        }
-
-        public WebLauncher(String numOfThreads,int numberOfSites){
-            this(Integer.parseInt(numOfThreads),numberOfSites);
         }
 
         public void run(){
             startFetchAnimation();
             initWorkers();
             startWorkers();
+            threadsRunning.decrementAndGet();
             stopFetchAnimation();
+
         }
 
          private void initWorkers() {
@@ -269,13 +282,13 @@ public class WebFrame extends JFrame {
 
         // the last method called from WebWorker
         public void workerFinishedWith( String result, int row){
-            if(isInterrupted()) result = WebWorker.INTERRUPTED;
             threadsComplete.incrementAndGet();
             threadsRunning.decrementAndGet();
-            changeTableData(result,row);
-            updateUIProgress();
             workersCounter.release();
 
+            if(isInterrupted()) result = WebWorker.INTERRUPTED;
+            changeTableData(result,row);
+            updateUIProgress();
         }
     }
 

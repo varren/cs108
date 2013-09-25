@@ -7,13 +7,12 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.concurrent.Semaphore;
 
 public class WebWorker extends Thread {
     private String urlString;
     private int rowToUpdate;
     private WebFrame.WebLauncher launcher;
-
+    private String resultStatus;
     public static final String ERROR = "err";
     public static final String INTERRUPTED = "interrupted";
 
@@ -25,12 +24,13 @@ public class WebWorker extends Thread {
 
     public void run(){
        download();
+       launcher.workerFinishedWith(resultStatus, rowToUpdate);
     }
 
     public void download(){
         //This is the core web/download i/o code...
-        System.out.println("thread" + Thread.currentThread().getId() +" starting download");
-        String resultStatus ="";
+        //System.out.println("thread" + Thread.currentThread().getId() +" starting download");
+
         InputStream input = null;
 
         StringBuilder contents = null;
@@ -84,7 +84,7 @@ public class WebWorker extends Thread {
             }
         }
 
-        launcher.workerFinishedWith(resultStatus, rowToUpdate);
+
     }
 
 }
