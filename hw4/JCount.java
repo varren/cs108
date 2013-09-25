@@ -42,7 +42,6 @@ public class JCount extends JPanel {
             }
         });
 
-
         add(inputText);
         add(infoLabel);
         add(startButton);
@@ -65,7 +64,6 @@ public class JCount extends JPanel {
             for (int i = 0; i <= num; i++) {
                 if (isInterrupted())
                     break;
-
 
                 if (i % REFRESH_INTERVAL == 0) {
                     try {
@@ -96,7 +94,6 @@ public class JCount extends JPanel {
         for (int i = 0; i < COUNT_NUM; i++)
             frame.add(new JCount());
 
-
         frame.pack();
         frame.setVisible(true);
     }
@@ -108,9 +105,5 @@ public class JCount extends JPanel {
                 createAndShowGUI();
             }
         });
-
-
     }
-
-
 }
