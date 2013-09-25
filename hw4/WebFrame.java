@@ -9,7 +9,7 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class WebFrame extends JFrame {
-    private static final String DEFAULT_DIR = System.getProperty("user.dir")+"\\hw4\\";
+    private static final String DEFAULT_DIR = System.getProperty("user.dir") + "\\hw4\\";
     private static final String FILENAME = DEFAULT_DIR + "links.txt";
     private static final int INPUT_FIELD_WIDTH = 4;
 
@@ -31,8 +31,10 @@ public class WebFrame extends JFrame {
     private long startTime;
     private AtomicInteger threadsRunning;
     private AtomicInteger threadsComplete;
+    private Semaphore workersCounter;
 
-    public WebFrame(){
+
+    public WebFrame() {
         super("WebLoader");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         getContentPane().setLayout(new BoxLayout(this.getContentPane(), BoxLayout.Y_AXIS));
@@ -42,7 +44,7 @@ public class WebFrame extends JFrame {
         table = new JTable(model);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
         JScrollPane scrollPane = new JScrollPane(table);
-        scrollPane.setPreferredSize(new Dimension(600,300));
+        scrollPane.setPreferredSize(new Dimension(600, 300));
 
         panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -57,7 +59,7 @@ public class WebFrame extends JFrame {
         completedLabel = new JLabel("Completed:");
         elapsedLabel = new JLabel("Elapsed:");
 
-        threadNumInputField = new JTextField("4",INPUT_FIELD_WIDTH);
+        threadNumInputField = new JTextField("4", INPUT_FIELD_WIDTH);
         threadNumInputField.setMaximumSize(threadNumInputField.getPreferredSize());
 
         progressBar = new JProgressBar(0, model.getRowCount());
@@ -80,129 +82,108 @@ public class WebFrame extends JFrame {
         setVisible(true);
     }
 
-    /*
-    *
-    *
-    * Action listeners
-    *
-    *
-    * */
 
-     private static final int SINGLE_THREAD = 1;
+    private static final int MULTIPLE_THREADS = 0;
+    private static final int SINGLE_THREAD = 1;
     private WebLauncher launcher = null;
+
     private void addActionListeners() {
 
         singleThreadButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(launcher != null){
-                    launcher.interrupt();
-                }
-                launcher = new WebLauncher(SINGLE_THREAD, model.getRowCount());
-                launcher.start();
+                if (launcher != null) launcher.interrupt();
+                startLauncher(SINGLE_THREAD);
+                startFetchAnimation();
             }
         });
 
         concurrentButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(launcher != null)
-                    launcher.interrupt();
-
-                int threadsNum;
-
-                try{
-                   threadsNum = Integer.parseInt(threadNumInputField.getText());
-                }catch (NumberFormatException ignore){
-                   threadsNum = 1;     // will run only 1 thread if user entered not int
-                }
-
-                launcher = new WebLauncher(threadsNum, model.getRowCount());
-                launcher.start();
+                if (launcher != null) launcher.interrupt();
+                startLauncher(MULTIPLE_THREADS);
+                startFetchAnimation();
             }
         });
 
         stopButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(launcher != null)
-                    launcher.interrupt();
-
+                if (launcher != null) launcher.interrupt();
                 launcher = null;
+                stopFetchAnimation();
             }
         });
+    }
+
+    private void startLauncher(int threadsNum) {
+        if (threadsNum == MULTIPLE_THREADS) {
+            try {
+                threadsNum = Integer.parseInt(threadNumInputField.getText());
+            } catch (NumberFormatException ignore) {
+                threadsNum = SINGLE_THREAD;     // will run only 1 thread if user entered not int
+            }
+        }
+        launcher = new WebLauncher(threadsNum, model.getRowCount(), this);
+        launcher.start();
     }
 
      /*
      *
      *
      * Table model methods
+     * Can probably make it in any thread... don't know the correct way...
      *
+     *    SwingUtilities.invokeLater(new Runnable() {
+     *        public void run() {
+     *            model.setValueAt(data, row, 1);
+     *        }
+     *    });
+     *
+     * And don't really know, do i need to synchronize it or not
+     *   synchronized (model){
+     *       return (String) model.getValueAt(row,0);
+     *   }
      *
      * */
 
-      public void changeTableData(final String data, final int row){
-//         can probably make it in any thread... don't know the correct way...
-//         SwingUtilities.invokeLater(new Runnable() {
-//             public void run() {
-//                 model.setValueAt(data, row, 1);
-//             }
-//         });
-
-          model.setValueAt(data, row, 1);
-     }
-
-    public String getUrl(int row){
-//        don't really know, do i need to synchronize it or not
-//        synchronized (model){
-//            return (String) model.getValueAt(row,0);
-//        }
-
-        return (String) model.getValueAt(row,0);
+    public void changeTableData(final String data, final int row) {
+        model.setValueAt(data, row, 1);
     }
 
-    /*
-    *
-    *
-    * Update UI methods
-    *
-    *
-    * */
+    public String getUrl(int row) {
+         return (String) model.getValueAt(row, 0);
+    }
 
-     public void startFetchAnimation(){
-         startTime = System.currentTimeMillis();
 
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                singleThreadButton.setEnabled(false);
-                concurrentButton.setEnabled(false);
-                stopButton.setEnabled(true);
-                progressBar.setValue(0);
+    public void startFetchAnimation() {
+        startTime = System.currentTimeMillis();
+        singleThreadButton.setEnabled(false);
+        concurrentButton.setEnabled(false);
+        stopButton.setEnabled(true);
+        progressBar.setValue(0);
+        for (int i = 0; i < model.getRowCount(); i++)  //reset model
+            model.setValueAt("", i, 1);
 
-                //reset model
-                for(int i =0;i<model.getRowCount();i++)
-                    model.setValueAt("",i,1);
-            }
-        });
     }
 
     public void stopFetchAnimation() {
+        singleThreadButton.setEnabled(true);
+        concurrentButton.setEnabled(true);
+        stopButton.setEnabled(false);
 
-
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                singleThreadButton.setEnabled(true);
-                concurrentButton.setEnabled(true);
-                stopButton.setEnabled(false);
-
-
-            }
-        });
+    }
+    // the last method called from WebWorker
+    public void releaseWorker(String result, int row) {
+        changeTableData(result, row);
+        threadsComplete.incrementAndGet();
+        threadsRunning.decrementAndGet();
+        workersCounter.release();
+        updateUIProgress();
     }
 
-    private void updateUIProgress(){
+    private void updateUIProgress() {
         final long elapsedTime = System.currentTimeMillis() - startTime;
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -212,51 +193,46 @@ public class WebFrame extends JFrame {
                 elapsedLabel.setText("Elapsed:" + elapsedTime);
             }
         });
-
-
     }
 
-    /*
-    *
-    *
-    * WebLauncher is WebFrame inner class to launch all the worker Threads
-    *
-    *
-    * */
-
-     public class WebLauncher extends Thread{
-        private Semaphore workersCounter;
+    public class WebLauncher extends Thread {
         private ArrayList<WebWorker> workers = new ArrayList<WebWorker>();
-        private int numberOfSites;
+        private int urlNum;
+        private WebFrame frame;
 
-        public WebLauncher(int numOfThreads, int numberOfSites){
-            threadsRunning = new AtomicInteger(1);
+        public WebLauncher(int numOfThreads, int urlNum, WebFrame frame) {
+            threadsRunning = new AtomicInteger(0);
             threadsComplete = new AtomicInteger(0);
             workersCounter = new Semaphore(numOfThreads);
-            this.numberOfSites = numberOfSites;
+            this.urlNum = urlNum;
+            this.frame = frame;
         }
 
-        public void run(){
-            startFetchAnimation();
+        public void run() {
+            threadsRunning.incrementAndGet();
             initWorkers();
             startWorkers();
             threadsRunning.decrementAndGet();
-            stopFetchAnimation();
 
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    stopFetchAnimation();
+                }
+            });
         }
 
-         private void initWorkers() {
-             for(int i = 0; i < numberOfSites;i++){
-                 if(isInterrupted())  break;
-                 WebWorker worker = new WebWorker(getUrl(i), i, this);
-                 workers.add(worker);
-             }
-         }
+        private void initWorkers() {
+            for (int i = 0; i < urlNum; i++) {
+                if (isInterrupted()) break;
+                WebWorker worker = new WebWorker(getUrl(i), i, frame);
+                workers.add(worker);
+            }
+        }
 
         private void startWorkers() {
-            for (WebWorker worker: workers){
-                if(isInterrupted()){
-                    for(WebWorker w: workers) w.interrupt();
+            for (WebWorker worker : workers) {
+                if (isInterrupted()) {
+                    interruptAllWorkers();
                     break;
                 }
 
@@ -264,69 +240,45 @@ public class WebFrame extends JFrame {
                     workersCounter.acquire();
                     threadsRunning.incrementAndGet();
                     worker.start();
-                    updateUIProgress();
                 } catch (InterruptedException e) {
-                    for(WebWorker w: workers) w.interrupt();
+                    interruptAllWorkers();
                     break;
                 }
             }
 
-            for(WebWorker worker: workers)
+            for (WebWorker worker : workers)
                 try {
                     worker.join();
                 } catch (InterruptedException e) {
-                    for(WebWorker w: workers) w.interrupt();
+                    interruptAllWorkers();
                     break;
                 }
         }
 
-        // the last method called from WebWorker
-        public void workerFinishedWith( String result, int row){
-            threadsComplete.incrementAndGet();
-            threadsRunning.decrementAndGet();
-            workersCounter.release();
-
-            if(isInterrupted()) result = WebWorker.INTERRUPTED;
-            changeTableData(result,row);
-            updateUIProgress();
+        private void interruptAllWorkers(){
+            for (WebWorker w : workers) w.interrupt();
         }
     }
 
-    /*
-    *
-    *
-    * Method loads file with URLs ( from constant filename) into the table model
-    *
-    *
-    * */
-
-     private void loadSiteList() {
+    private void loadSiteList() {
         try {
             BufferedReader br = new BufferedReader(new FileReader(new File(FILENAME)));
 
-            while(true){
+            while (true) {
                 String line = br.readLine();
-                if(line == null)break;
-                model.addRow(new String []{line, ""});
+                if (line == null) break;
+                model.addRow(new String[]{line, ""});
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    /*
-    *
-    *
-    * main
-    *
-    *
-    * */
-    public static void main(String[] args){
+    public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 new WebFrame();
             }
         });
-
     }
 }

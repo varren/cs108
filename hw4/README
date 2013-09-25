@@ -5,7 +5,7 @@ Part 4 is in WebLoader package
 
 Can run ">java Bank small.txt 1"
 
-Last part(WebFrame and WebWorker files) is really tricky for me.
+Last part(WebFrameVir and WebWorker files) is really tricky for me.
 There can probably be a race condition or inappropriate usage of some patterns/Java mechanics
 It seems fine but i cant check it, so will just move on and will maybe come back someday.
 

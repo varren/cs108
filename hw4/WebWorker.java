@@ -11,25 +11,24 @@ import java.util.Date;
 public class WebWorker extends Thread {
     private String urlString;
     private int rowToUpdate;
-    private WebFrame.WebLauncher launcher;
+    private WebFrame frame;
     private String resultStatus;
-    public static final String ERROR = "err";
-    public static final String INTERRUPTED = "interrupted";
+    private static final String ERROR = "err";
+    private static final String INTERRUPTED = "interrupted";
 
-    public WebWorker(String urlString, int rowToUpdate, WebFrame.WebLauncher launcher) {
+    public WebWorker(String urlString, int rowToUpdate, WebFrame frame) {
         this.urlString = urlString;
         this.rowToUpdate = rowToUpdate;
-        this.launcher = launcher;
+        this.frame = frame;
     }
 
-    public void run(){
-       download();
-       launcher.workerFinishedWith(resultStatus, rowToUpdate);
+    public void run() {
+        download();
+        frame.releaseWorker(resultStatus, rowToUpdate);
     }
 
-    public void download(){
+    public void download() {
         //This is the core web/download i/o code...
-        //System.out.println("thread" + Thread.currentThread().getId() +" starting download");
 
         InputStream input = null;
 
@@ -48,7 +47,7 @@ public class WebWorker extends Thread {
             BufferedReader reader = new BufferedReader(new InputStreamReader(input));
 
             char[] array = new char[1000];
-            long startTime =  System.currentTimeMillis();
+            long startTime = System.currentTimeMillis();
 
 
             int size = 0;
@@ -57,21 +56,22 @@ public class WebWorker extends Thread {
             while ((len = reader.read(array, 0, array.length)) > 0) {
                 contents.append(array, 0, len);
                 Thread.sleep(100);
-                size+=len;
+                size += len;
             }
-            long endTime =  System.currentTimeMillis();
-
+            long endTime = System.currentTimeMillis();
 
 
             // Successful download if we get here
-            SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
-            resultStatus = format.format(new Date(startTime)) + "   " + (endTime-startTime) + "ms   " + size + "bytes";
+
+            resultStatus = new SimpleDateFormat("HH:mm:ss").format(new Date(startTime))
+                    + "   " + (endTime - startTime)
+                    + "ms   " + size + "bytes";
         }
         // Otherwise control jumps to a catch...
         catch (MalformedURLException ignored) {
             resultStatus = ERROR;
         } catch (InterruptedException exception) {
-           resultStatus = INTERRUPTED;
+            resultStatus = INTERRUPTED;
         } catch (IOException ignored) {
             resultStatus = ERROR;
         }
@@ -83,8 +83,5 @@ public class WebWorker extends Thread {
             } catch (IOException ignored) {
             }
         }
-
-
     }
-
 }
