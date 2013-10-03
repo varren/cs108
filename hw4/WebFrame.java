@@ -210,8 +210,12 @@ public class WebFrame extends JFrame {
 
         public void run() {
             threadsRunning.incrementAndGet();
-            initWorkers();
-            startWorkers();
+            try {
+                initWorkers();
+                startWorkers();
+            } catch (InterruptedException e) {
+                interruptAllWorkers();
+            }
             threadsRunning.decrementAndGet();
 
             SwingUtilities.invokeLater(new Runnable() {
@@ -221,41 +225,28 @@ public class WebFrame extends JFrame {
             });
         }
 
-        private void initWorkers() {
+        private void initWorkers() throws InterruptedException {
             for (int i = 0; i < urlNum; i++) {
-                if (isInterrupted()) break;
+                if (isInterrupted()) throw new InterruptedException();
                 WebWorker worker = new WebWorker(getUrl(i), i, frame);
                 workers.add(worker);
             }
         }
 
-        private void startWorkers() {
+        private void startWorkers() throws InterruptedException {
             for (WebWorker worker : workers) {
-                if (isInterrupted()) {
-                    interruptAllWorkers();
-                    break;
-                }
-
-                try {
-                    workersCounter.acquire();
-                    threadsRunning.incrementAndGet();
-                    worker.start();
-                } catch (InterruptedException e) {
-                    interruptAllWorkers();
-                    break;
-                }
+                if (isInterrupted()) throw new InterruptedException();
+                workersCounter.acquire();
+                threadsRunning.incrementAndGet();
+                worker.start();
             }
 
             for (WebWorker worker : workers)
-                try {
-                    worker.join();
-                } catch (InterruptedException e) {
-                    interruptAllWorkers();
-                    break;
-                }
+                worker.join();
+
         }
 
-        private void interruptAllWorkers(){
+        private void interruptAllWorkers() {
             for (WebWorker w : workers) w.interrupt();
         }
     }

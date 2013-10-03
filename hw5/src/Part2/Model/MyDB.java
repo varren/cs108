@@ -1,4 +1,4 @@
-package store;
+package Part2.Model;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

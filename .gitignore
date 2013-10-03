@@ -8,3 +8,5 @@ DemoFiles/
 *.jpg
 MyDBDemo.java
 lib/
+WebTest/
+SimpleWebTest/

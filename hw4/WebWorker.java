@@ -28,7 +28,7 @@ public class WebWorker extends Thread {
     }
 
     public void download() {
-        //This is the core web/download i/o code...
+        //This is the core L11/download i/o code...
 
         InputStream input = null;
 
