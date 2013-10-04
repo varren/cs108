@@ -20,6 +20,6 @@
     Password: <input type="text" name="password"/>
     <input type="submit" name="login"/>
 </form>
-<a href="new_account.jsp">Create New Account</a>
+<a href="create_new.jsp">Create New Account</a>
 </body>
 </html>

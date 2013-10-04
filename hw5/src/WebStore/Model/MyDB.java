@@ -1,4 +1,4 @@
-package Part2.Model;
+package WebStore.Model;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

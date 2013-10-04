@@ -1,7 +1,7 @@
 /* User: Peter  Date: 03.10.13  Time: 11:45 */
 
 
-import Part1.Model.AccountManager;
+import Login.Model.AccountManager;
 import org.junit.Before;
 import org.junit.Test;
 

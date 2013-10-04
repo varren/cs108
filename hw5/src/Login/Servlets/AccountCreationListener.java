@@ -1,13 +1,13 @@
-package Part1.Servlets;
+package Login.Servlets;
 
-import Part1.Model.AccountManager;
+import Login.Model.AccountManager;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 
-@WebListener("/AccountCreationListener")
+@WebListener
 public class AccountCreationListener implements ServletContextListener {
 
     // Public constructor is required by servlet spec

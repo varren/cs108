@@ -1,6 +1,6 @@
-package Part1.Servlets;
+package Login.Servlets;
 
-import Part1.Model.AccountManager;
+import Login.Model.AccountManager;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -11,9 +11,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /* User: Peter  Date: 03.10.13  Time: 10:35 */
-
-@WebServlet("/AccountCreationServlet")
+@WebServlet(name = "AccountCreationServlet", urlPatterns = {"/Login/AccountCreationServlet"})
 public class AccountCreationServlet extends HttpServlet {
+
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         AccountManager accountManager = (AccountManager)getServletContext().getAttribute(AccountManager.ATTRIBUTE_NAME);
 

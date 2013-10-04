@@ -1,4 +1,4 @@
-package Part1.Model;
+package Login.Model;
 
 import java.util.HashMap;
 
