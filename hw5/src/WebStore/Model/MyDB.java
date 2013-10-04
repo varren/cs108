@@ -17,11 +17,11 @@ import java.sql.SQLException;
  * MyDB.close()
  */
 public class MyDB {
-	
-	private static final String MYSQL_USERNAME = "ccs108yourStudentID";
-	private static final String MYSQL_PASSWORD = "";
-	private static final String MYSQL_DATABASE_SERVER = "mysql-user.stanford.edu";
-	private static final String MYSQL_DATABASE_NAME = "c_cs108_yourStudentID";
+
+    private static final String MYSQL_USERNAME = "varren";
+    private static final String MYSQL_PASSWORD = "";
+    private static final String MYSQL_DATABASE_SERVER = "192.168.56.10";
+    private static final String MYSQL_DATABASE_NAME = "cs108";
 	
 	private static Connection con;
 	

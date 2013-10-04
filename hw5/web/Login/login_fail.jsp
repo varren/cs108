@@ -8,7 +8,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <title></title>
+    <title>Please Try Again</title>
 </head>
 <body>
 <h1>Please Try Again</h1>
@@ -18,7 +18,7 @@
 <form action="LoginServlet" method="post">
     User Name: <input type="text" name="name"/> <br/>
     Password: <input type="text" name="password"/>
-    <input type="submit" name="login"/>
+    <input type="submit" value="login"/>
 </form>
 <a href="create_new.jsp">Create New Account</a>
 </body>

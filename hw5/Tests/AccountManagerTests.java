@@ -14,7 +14,7 @@ public class AccountManagerTests {
     @Before
     public void setUp() throws Exception {
         am = new AccountManager();
-        // 2 records just for testing
+        // 2 records just for testing already created in new AccountManager() like this:
         // createNewAccount("Patrick", "1234");
         // createNewAccount("Molly", "FloPup");
     }

@@ -8,7 +8,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <title></title>
+    <title>Create New Account</title>
 </head>
 <body>
 <h1>Create New Account</h1>
@@ -18,7 +18,7 @@
 <form action="AccountCreationServlet" method="post">
     User Name: <input type="text" name="name"/> <br/>
     Password: <input type="text" name="password"/>
-    <input type="submit" name="login"/>
+    <input type="submit" value="create"/>
 </form>
 </body>
 </html>

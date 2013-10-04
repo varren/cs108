@@ -13,7 +13,7 @@
 <body>
 <ul>
     <li><a href="Login/login.jsp">Part 1: Login</a> </li>
-    <li><a href="WebStore/login.jsp">Part 2: Basic Store</a></li>
+    <li><a href="WebStore/">Part 2: Basic Store</a></li>
 </ul>
 </body>
 </html>

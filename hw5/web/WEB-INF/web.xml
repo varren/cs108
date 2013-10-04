@@ -5,4 +5,8 @@
 		  http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
            version="3.0">
 
+    <servlet>
+        <servlet-name>ShoppingCartServlet</servlet-name>
+        <servlet-class>WebStore.Servlets.ShoppingCartServlet</servlet-class>
+    </servlet>
 </web-app>
